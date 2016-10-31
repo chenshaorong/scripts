@@ -2,7 +2,7 @@
 # Author: csr
 # Date：2016-03-27
 # Email: 731685435@qq.com
-# Version: v1.0
+# Version: v1.1
 #
 # Usage:
 #   * 统计每小时分钟秒行数
@@ -25,16 +25,16 @@ while getopts ":s:m:t:o:h" value; do
 			echo -e "\033[36mUsage:\n  -s second\n  -m minute\n  -t half hour\n  -o one hour\033[0m"
 			;;
 		s)
-			perl -e 'while(<>){$hash{$1}++ if /\D(\d\d:\d\d:\d\d)\D/;} while(($key,$value) = each %hash){print "$key $value\n"}' $OPTARG |sort
+			perl -e 'while(<>){$hash{$1}++ if /\D(\d\d:\d\d:\d\d)\D/;} while(($key,$value) = each %hash){print "$key $value\n"}' "$OPTARG" |sort
 			;;
 		m)
-			perl -e 'while(<>){$hash{$1}++ if /\D(\d\d:\d\d):\d\d\D/;} while(($key,$value) = each %hash){print "$key $value\n"}' $OPTARG |sort
+			perl -e 'while(<>){$hash{$1}++ if /\D(\d\d:\d\d):\d\d\D/;} while(($key,$value) = each %hash){print "$key $value\n"}' "$OPTARG" |sort
 			;;
 		t)
-			perl -e 'while(<>){if(/\D(\d\d):(\d\d):\d\d\D/ and $2>=30){$hash{$1.":30 ~ ".$1.":59"}++;}else{$hash{$1.":00 ~ ".$1.":30"}++;}} while(($key,$value) = each %hash){print "$key $value\n"}' $OPTARG |sort
+			perl -e 'while(<>){if(/\D(\d\d):(\d\d):\d\d\D/ and $2>=30){$hash{$1.":30 ~ ".$1.":59"}++;}else{$hash{$1.":00 ~ ".$1.":30"}++;}} while(($key,$value) = each %hash){print "$key $value\n"}' "$OPTARG" |sort
 			;;
 		o)
-			perl -e 'while(<>){$hash{$1}++ if /\D(\d\d):\d\d:\d\d\D/;} while(($key,$value) = each %hash){print "$key $value\n"}' $OPTARG |sort
+			perl -e 'while(<>){$hash{$1}++ if /\D(\d\d):\d\d:\d\d\D/;} while(($key,$value) = each %hash){print "$key $value\n"}' "$OPTARG" |sort
 			;;
 		?)
 			err "$0: Invalid option, -h for help"
