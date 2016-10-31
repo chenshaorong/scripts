@@ -1,0 +1,63 @@
+# This is the default ansible 'hosts' file.
+#
+# It should live in /etc/ansible/hosts
+#
+#   - Comments begin with the '#' character
+#   - Blank lines are ignored
+#   - Groups of hosts are delimited by [header] elements
+#   - You can enter hostnames or ip addresses
+#   - A hostname/ip can be a member of multiple groups
+
+# Ex 1: Ungrouped hosts, specify before any group headers.
+
+#green.example.com
+#blue.example.com
+#192.168.100.1
+#192.168.100.10
+
+# Ex 2: A collection of hosts belonging to the 'webservers' group
+
+#[webservers]
+#alpha.example.org
+#beta.example.org
+#192.168.1.100
+#192.168.1.110
+
+# If you have multiple hosts following a pattern you can specify
+# them like this:
+
+#www[001:006].example.com
+
+# Ex 3: A collection of database servers in the 'dbservers' group
+
+#[dbservers]
+#
+#db01.intranet.mydomain.net
+#db02.intranet.mydomain.net
+#10.25.1.56
+#10.25.1.57
+
+# Here's another example of host ranges, this time there are no
+# leading 0s:
+
+#db-[99:101]-node.example.com
+
+# ansible_ssh_host 默认目标主机
+# ansible_ssh_port 默认目标端口
+# ansible_ssh_user 默认连接用户
+# ansible_ssh_pass 默认连接用户密码
+# ansible_sudo_pass 默认sudo密码
+# ansible_sudo_exe (new in version 1.8) sudo 命令路径(适用于1.8及以上版本)
+# ansible_shell_type 目标系统的shell类型.默认情况下,命令的执行使用 'sh' 语法,可设置为 'csh' 或 'bash'等.
+# ansible_connection 目标主机连接类型：local、ssh、paramiko
+# ansible_ssh_private_key_file 目标主机的ssh私钥
+# ansible_*_interpreter 指定采用非Python脚本语言，如Ruby、Perl或其他类似ansible_python_interpreter解释器
+
+[oschina]
+oscapp1 ansible_ssh_host=1.1.1.1 ansible_ssh_port=6666 ansible_ssh_user=oschina ansible_ssh_pass=666666 ansible_sudo_pass=666666 ansible_connection=ssh
+oscapp2 ansible_ssh_host=2.2.2.2 ansible_ssh_port=6666 ansible_ssh_user=oschina ansible_ssh_pass=666666 ansible_sudo_pass=666666 ansible_connection=ssh
+
+[git]
+sto1 ansible_ssh_host=1.1.1.1 ansible_ssh_port=6666 ansible_ssh_user=git ansible_ssh_pass="666666" ansible_sudo_pass="666666" ansible_connection=ssh
+sto2 ansible_ssh_host=2.2.2.2 ansible_ssh_port=6666 ansible_ssh_user=git ansible_ssh_pass="666666" ansible_sudo_pass="666666" ansible_connection=ssh
+
