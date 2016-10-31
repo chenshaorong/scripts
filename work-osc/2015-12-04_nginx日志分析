@@ -1,0 +1,32 @@
+目的：分析提交用户.git文件大小
+一、分析nginx日志，日志样本如下：(日志大小500M)
+1.1.1.1 - - [04/Dec/2015:12:57:03 +0800] "GET /yudiao/educrm.git/info/refs?service=git-upload-pack HTTP/1.1" 401 0 "-" "git/2.1.4" - 0.046 0.046
+1.1.1.1 - - [04/Dec/2015:12:57:03 +0800] "GET /cp_Chen/Awesome.git/info/refs?service=git-upload-pack HTTP/1.1" 200 310 "-" "git/1.9.4.msysgit.1" - 0.088 0.088
+1.1.1.1 - - [04/Dec/2015:12:57:03 +0800] "GET /zichan360/zichan360web.git/info/refs?service=git-upload-pack HTTP/1.1" 401 0 "-" "git/1.8.3.1" - 0.017 0.017
+1.1.1.1 - - [04/Dec/2015:12:57:03 +0800] "GET /cyokin/sport_anta.git/info/refs?service=git-upload-pack HTTP/1.1" 401 0 "-" "git/1.7.0" - 0.026 0.026
+1.1.1.1 - - [04/Dec/2015:12:57:03 +0800] "GET /igola/igola-backend.git/info/refs?service=git-upload-pack HTTP/1.1" 401 0 "-" "git/1.8.3.1" - 0.018 0.018
+1.1.1.1 - - [04/Dec/2015:12:57:03 +0800] "GET /kmgbkj/IBeamTourERP.git/info/refs?service=git-receive-pack HTTP/1.1" 401 0 "-" "git/1.8.3.msysgit.0" - 0.023 0.023
+
+二、要求
+1、首先匹配URL包含"service=git-upload-pack"的行，提取出前面至'xxx.git'的路径，例如：
+  - 1.1.1.1 - - [04/Dec/2015:12:57:03 +0800] "GET /igola/igola-backend.git/info/refs?service=git-upload-pack HTTP/1.1" 401 0 "-" "git/1.8.3.1" - 0.018 0.018
+  - 提取"/igola/igola-backend.git"
+
+2、去重(去除重复的行)，拼接成如下形式（其中ig是前两个字符），并保存结果为pro.txt
+  - /home/git/repositories/ig/igola/igola-backend.git
+
+3、du -sh `cat pro.txt`，打印结果时间隔为1s(故不能直接cat)
+
+三、实现
+1、拼接结果至pro.txt(日志大小483M，执行该命令时间大约26s)
+perl -ne 'print "/home/git/repositories/$2/$1\n" if /GET \/((..).*\.git).*service=git-upload-pack/' nginx.log |sort -u >pro.txt
+
+2、循环打印大小，间隔为1s
+perl -ne 'print `du -sh $_`; sleep 1;' pro.txt
+
+四、改进
+1、输出的时候需要判断文件或目录是否存在，存在才打印；
+2、du -sm 按M降序输出
+Tip: -e判断时必须使用chomp去掉后面的换行符
+sudo perl -ne 'chomp; print `du -sm $_` if -e' pro.txt |sort -nr |perl -pe 'sleep 1'
+操作可见示例的gif图

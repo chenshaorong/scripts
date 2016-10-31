@@ -1,0 +1,15 @@
+前提：迁移过程中使用增量备份，遗漏了部分当天特殊方式提交的用户
+
+一、分析nginx日志，日志样本如下：
+1.1.1.1 - - [19/Dec/2015:00:43:09 +0800] "POST /api/v3/internal/subversion/yt2%2Fmusic/yintian2%40foxmail.com HTTP/1.1" 201 220 "-" "SVN/2.0.1-Next" - 0.206 0.206
+1.1.1.1 - - [19/Dec/2015:21:11:59 +0800] "GET //api/v3/internal/allowed?key_id=157389&action=git-receive-pack&ref=master&project=byhongda/linux_skills HTTP/1.1" 200 4 "-" "Ruby" - 0.020 0.020
+1.1.1.1 - - [19/Dec/2015:00:26:44 +0800] "GET /api/v3/events?private_token=6kyZwxTBBv5rgtCzMxzp&page=1 HTTP/1.1" 200 4973 "-" "Git%40OSC/1.0.1 CFNetwork/758.2.8 Darwin/15.0.0" - 0.212 0.212
+
+二、要求
+1、找出URL中"/subversion/"到"%2F"中间的内容
+2、找出URL中"&project="到"/"之间的内容
+3、去重(一条记录1、2不可能同时存在)
+4、注意特殊字符的转义和各种小坑
+
+三、实现
+perl -ne 'print "$1\n" if m#/subversion/([^%]*)\%2F# || m#\&project=([^/]*)/#' nginx.log |sort -u >userdiff.txt
