@@ -1,0 +1,23 @@
+前提：由于网络波动等原因，rsync同步数据时使用单进程可能会造成数据同步不及时，故需要开多个进程进行同步，同时限制其并发数
+  * $rsync_user_list为存放同步列表的文件，记录需要同步的文件或目录列表，格式每个一行，使用绝对路径(见示例)
+  * rsync_concurrency.conf为配置文件，需要提前配置好rsync的各个参数等，详见配置文件的说明
+
+usage:
+  * start:
+    - nohup ./rsync_concurrency.sh [option] [argument] &>/dev/null &
+  * stop:
+    - kill -2 `cat $pid_file` # pid file 详解配置文件介绍
+  * cat:
+    - tail -f $rsync_log
+
+[OPITION]
+  -h 显示帮助信息
+  -n 指定rsync并发数，默认为5(可在配置文件中修改)
+  -f 指定$rsync_user_list文件位置，默认为'/tmp/user_list.txt'(可在配置文件中修改)
+
+[示例]
+# cat $rsync_user_list
+/dir1/
+/dir2/1.log
+/dir3/d/
+...
