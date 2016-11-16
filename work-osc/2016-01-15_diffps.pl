@@ -2,7 +2,7 @@
 # Author: csr
 # Date：2016-01-15
 # Email: chenshaorong@oschina.cn
-# Version: v5.0
+# Version: v5.2
 #
 # 前提：经常会遇到这种情况：系统出问题了但是却找不出根源
 # 该脚本则用于每n秒对比下，查看哪些进程发生了变化
@@ -56,8 +56,14 @@ our $seq=3;
 # 判断$1是否为合法数字且大于0
 $seq=$ARGV[0] if 0 < @ARGV && $ARGV[0] =~ /^-?\d+(\.\d+)?$/ && $ARGV[0] !~ /^-?0(\d+)?$/ && $ARGV[0] > 0;
 
-# 用`ls -ld /proc/$2/cwd |awk '{print $NF}'`显示效果比较好，但是单双引号不够用了...
-our @res1=`ps -ef |sed '1'd | awk -F' ' '{ORS=""; if(\$2!='$$' && \$3!=$$ && \$2!='\$\$' && \$3!='\$\$'){\$1=\$4=\$5=\$6=\$7=""; print; system("stat /proc/"\$2"/cwd 2>/dev/null |head -n1")}}'`;
+# perl和shell一样，双引号内需要对 $ 进行转义，而单引号则不用
+#   - 这里要注意：`ps -ef |awk '{print \$NF}'`
+#   - 还是需要对$NF进行转义，因为在 `` 里 单引号 只是做普通的字符串
+# 注释的三行效果和没注释的那行执行的效果是一样的
+#$c1="ls -ld /proc/";
+#$c2="/cwd |awk '{print \\\$NF}'";
+#@res=`ps -ef |sed '1'd | awk -F' ' '{ORS="    path: "; if(\$2!='$$' && \$3!=$$ && \$2!='\$\$' && \$3!='\$\$'){\$1=\$4=\$5=\$6=\$7=""; print; system("'"$c1"'"\$2"'"$c2"'")}}'`;
+our @res1=`ps -ef |sed '1'd | awk -F' ' '{ORS="    path: "; if(\$2!='$$' && \$3!=$$ && \$2!='\$\$' && \$3!='\$\$'){\$1=\$4=\$5=\$6=\$7=""; print; system("'"ls -ld /proc/"'"\$2"'"/cwd |awk '{print \\\$NF}'"'")}}'`;
 our @res2;
 our %m;
 our %n;
@@ -65,7 +71,7 @@ our %n;
 while(1){
     sleep $seq;
     system("clear");
-    @res2=`ps -ef |sed '1'd | awk -F' ' '{ORS=""; if(\$2!='$$' && \$3!=$$ && \$2!='\$\$' && \$3!='\$\$'){\$1=\$4=\$5=\$6=\$7=""; print; system("stat /proc/"\$2"/cwd 2>/dev/null |head -n1")}}'`;
+    @res2=`ps -ef |sed '1'd | awk -F' ' '{ORS="    path: "; if(\$2!='$$' && \$3!=$$ && \$2!='\$\$' && \$3!='\$\$'){\$1=\$4=\$5=\$6=\$7=""; print; system("'"ls -ld /proc/"'"\$2"'"/cwd |awk '{print \\\$NF}'"'")}}'`;
     
     # 并集、交集
     for(@res1,@res2){
