@@ -24,6 +24,7 @@ done >&6
 
 i=1
 for url in `cat url.txt`; do
+	read -u 6
     {
         ab -c $1 -n $2 $url &> url${i}.log 
         echo >&6
